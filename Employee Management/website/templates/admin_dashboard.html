@@ -1,0 +1,79 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+
+{% block content %}
+<h2 class="mb-4">Welcome, {{ user.name }}</h2>
+
+<div class="mb-4">
+  <a href="{{ url_for('views.create_employee') }}" class="btn btn-outline-primary me-2">Add Employee</a>
+  <a href="{{ url_for('views.register_complaint') }}" class="btn btn-outline-success">Register Complaint</a>
+  <a href="{{ url_for('views.employee_list') }}" class="btn btn-outline-warning">Employee List</a>
+</div>
+
+<!-- Complaint Summary -->
+<div class="row mb-4">
+  <div class="col-md-3">
+    <div class="card text-white bg-primary">
+      <div class="card-body">
+        <h5 class="card-title">Total Complaints</h5>
+        <p class="card-text">{{ complaints|length }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-warning">
+      <div class="card-body">
+        <h5 class="card-title">Pending</h5>
+        <p class="card-text">{{ complaints|selectattr('status', 'equalto', 'Pending')|list|length }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-success">
+      <div class="card-body">
+        <h5 class="card-title">Closed</h5>
+        <p class="card-text">{{ complaints|selectattr('status', 'equalto', 'Closed')|list|length }}</p>
+      </div>
+    </div>
+  </div>
+  <div class="col-md-3">
+    <div class="card text-white bg-danger">
+      <div class="card-body">
+        <h5 class="card-title">Escalated</h5>
+        <p class="card-text">{{ complaints|selectattr('status', 'equalto', 'Escalated')|list|length }}</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Complaint List -->
+<div class="table-responsive mb-5">
+  <h4 class="mb-3">All Complaints</h4>
+  <table class="table table-bordered align-middle">
+    <thead class="table-light">
+      <tr>
+        <th>#</th>
+        <th>Customer Name</th>
+        <th>Description</th>
+        <th>Status</th>
+        <th>Assigned To</th>
+        <th>Escalation Remarks</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in complaints %}
+        <tr>
+          <td>{{ c.id }}</td>
+          <td>{{ c.customer_name }}</td>
+          <td>{{ c.description }}</td>
+          <td>{{ c.status }}</td>
+          <td>{{ c.employee.name if c.employee else "Unassigned" }}</td>
+          <td>{{ c.escalate_remarks if c.status == 'Escalated' else "-" }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% endblock %}
